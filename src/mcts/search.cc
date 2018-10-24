@@ -157,7 +157,7 @@ void Search::SendMovesStats() const {
       params_.GetFpuReduction() * std::sqrt(root_node_->GetVisitedPolicy());
   const float U_coeff =
       params_.GetCpuct() *
-      std::sqrt(std::max(root_node_->GetChildrenVisits(), 1u));
+      std::log(std::max(root_node_->GetChildrenVisits(), 1u));
 
   std::vector<EdgeAndNode> edges;
   for (const auto& edge : root_node_->Edges()) edges.push_back(edge);
@@ -738,7 +738,7 @@ SearchWorker::NodeToProcess SearchWorker::PickNodeToExtend(
     // If we fall through, then n_in_flight_ has been incremented but this
     // playout remains incomplete; we must go deeper.
     float puct_mult =
-        params_.GetCpuct() * std::sqrt(std::max(node->GetChildrenVisits(), 1u));
+        params_.GetCpuct() * std::log(std::max(node->GetChildrenVisits(), 1u));
     float best = std::numeric_limits<float>::lowest();
     float second_best = std::numeric_limits<float>::lowest();
     int possible_moves = 0;
@@ -938,7 +938,7 @@ int SearchWorker::PrefetchIntoCache(Node* node, int budget) {
   typedef std::pair<float, EdgeAndNode> ScoredEdge;
   std::vector<ScoredEdge> scores;
   float puct_mult =
-      params_.GetCpuct() * std::sqrt(std::max(node->GetChildrenVisits(), 1u));
+      params_.GetCpuct() * std::log(std::max(node->GetChildrenVisits(), 1u));
   // FPU reduction is not taken into account.
   const float parent_q = -node->GetQ();
   for (auto edge : node->Edges()) {
